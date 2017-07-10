@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.topake.mvvm.ui.main.v1.MainViewModelV1"/>
+    </data>
+
+    <LinearLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.main.v1.MainActivityV1">
+
+        <TextView
+            android:id="@+id/main_textview_counter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="@{viewModel.countText}"
+            android:textSize="32sp"/>
+
+        <Button
+            android:id="@+id/main_button_increment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:gravity="center"
+            android:onClick="@{viewModel::increaseClick}"
+            android:text="Increment"/>
+
+        <Button
+            android:id="@+id/main_button_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:gravity="center"
+            android:onClick="@{viewModel::detailClick}"
+            android:text="Detail"/>
+
+    </LinearLayout>
+
+</layout>

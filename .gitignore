@@ -1,0 +1,30 @@
+# Generated files
+bin/
+gen/
+
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Idea files
+.idea
+*.iml
+*.ipr
+*.iws
+
+# Checkstyle files
+config/
+
+# Apple filesystem
+.DS_STORE
+
+# Lint related files
+*/lint.xml
+
+# Others
+/captures
+.externalNativeBuild
+
