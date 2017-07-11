@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Dagger2KotlinSample</string>
+    <string name="app_name">MvvmCleanSample</string>
     <string name="dummy_text">Context dependent dummy text</string>
 </resources>

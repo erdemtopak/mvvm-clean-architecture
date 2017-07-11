@@ -11,7 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.topake.mvvm.BR
 import com.topake.mvvm.helper.NavigationHelper
-import com.topake.mvvm.util.onPropertyChanged
+import com.topake.mvvm.util.onPropertyChangedAutoClear
 
 abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel> : Fragment() {
 
@@ -32,7 +32,7 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel> : Fragment(
 
     protected fun initViewModel() {
         viewModel = ViewModelProviders.of(this).get(getViewModelClass())
-        viewModel.navigationState.onPropertyChanged { navigationHelper.navigate(it) }
+        viewModel.navigationState.onPropertyChangedAutoClear(this) { navigationHelper.navigate(it) }
     }
 
     protected fun setContentView(inflater: LayoutInflater?,
