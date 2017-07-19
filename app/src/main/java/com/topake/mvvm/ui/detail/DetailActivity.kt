@@ -1,16 +1,17 @@
 package com.topake.mvvm.ui.detail
 
 import android.os.Bundle
-import android.support.v4.app.FragmentActivity
-import android.widget.Toast
+import android.support.v4.app.Fragment
 import com.topake.mvvm.R
+import com.topake.mvvm.core.BaseActivity
+import com.topake.mvvm.databinding.ActivityDetailBinding
 import com.topake.mvvm.helper.NavigationWrapper
 
 /**
  * Created by topake on 29/06/2017.
  */
 
-class DetailActivity : FragmentActivity() {
+class DetailActivity : BaseActivity<ActivityDetailBinding, DetailActivityViewModel, DetailInteractor>() {
 
     companion object {
         val KEY_DUMMY_TEXT = "KEY_DUMMY_TEXT"
@@ -24,8 +25,26 @@ class DetailActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_detail)
-        Toast.makeText(this, intent.extras.getString(KEY_DUMMY_TEXT), Toast.LENGTH_SHORT).show()
+        replaceFragment(DetailFragment1())
+    }
+
+    fun replaceFragment(fragment: Fragment) {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.base_frame_container, fragment)
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
+    }
+
+    override fun getViewModelClass(): Class<out DetailActivityViewModel> {
+        return DetailActivityViewModel::class.java
+    }
+
+    override fun getLayoutResId(): Int {
+        return R.layout.activity_detail
+    }
+
+    override fun createInteractor(): DetailInteractor {
+        return DetailInteractor(viewModel)
     }
 
 }

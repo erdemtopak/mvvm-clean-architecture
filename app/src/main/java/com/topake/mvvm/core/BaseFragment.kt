@@ -1,6 +1,5 @@
 package com.topake.mvvm.core
 
-import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.databinding.ViewDataBinding
 import android.os.Bundle
@@ -15,6 +14,7 @@ import com.topake.mvvm.util.onPropertyChangedAutoClear
 
 abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel> : Fragment() {
 
+    protected val uniqueIdDelegate = UniqueIdDelegate()
     protected lateinit var binding: B
     protected lateinit var viewModel: VM
 
@@ -22,6 +22,7 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel> : Fragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        uniqueIdDelegate.generate(this, savedInstanceState)
         initNavigationHelper()
     }
 
@@ -31,8 +32,12 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel> : Fragment(
     }
 
     protected fun initViewModel() {
-        viewModel = ViewModelProviders.of(this).get(getViewModelClass())
-        viewModel.navigationState.onPropertyChangedAutoClear(this) { navigationHelper.navigate(it) }
+        if (ViewModelOwner::class.java.isAssignableFrom(activity.javaClass)) {
+            viewModel = (activity as ViewModelOwner).getViewModel(getUniqueId(), getViewModelClass())
+            viewModel.navigationState.onPropertyChangedAutoClear(this) { navigationHelper.navigate(it) }
+        } else{
+            throw RuntimeException("Activity must be implement ViewModelOwner")
+        }
     }
 
     protected fun setContentView(inflater: LayoutInflater?,
@@ -40,16 +45,26 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel> : Fragment(
                                  @LayoutRes layoutResID: Int): View {
         binding = DataBindingUtil.inflate<B>(inflater, layoutResID, container, false)
         binding.setVariable(BR.viewModel, viewModel)
+        registerViewModel()
         return binding.root
     }
 
     protected fun initNavigationHelper() {
-        navigationHelper = NavigationHelper(context, childFragmentManager)
+        navigationHelper = NavigationHelper(activity, fragmentManager)
     }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        uniqueIdDelegate.saveState(outState)
+    }
+
+    protected fun getUniqueId() = uniqueIdDelegate.uniqueId
 
     protected abstract fun getViewModelClass(): Class<out VM>
 
     @LayoutRes
     protected abstract fun getLayoutResId(): Int
+
+    protected abstract fun registerViewModel()
 
 }

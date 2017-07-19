@@ -8,7 +8,7 @@ import com.topake.mvvm.helper.NavigationWrapper
  * Created by topake on 06/07/2017.
  */
 
-open class BaseViewModel : ViewModel() {
+abstract class BaseViewModel : ViewModel() {
 
     var navigationState = ObservableField<NavigationWrapper>()
 }

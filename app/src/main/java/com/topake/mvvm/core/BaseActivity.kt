@@ -1,7 +1,6 @@
 package com.topake.mvvm.core
 
 import android.app.Application
-import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.databinding.ViewDataBinding
 import android.os.Bundle
@@ -18,22 +17,28 @@ import dagger.android.AndroidInjection
  * Created by topake on 29/06/2017.
  */
 
-abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel> : FragmentActivity() {
+abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel, I: BaseInteractor> : FragmentActivity(),
+        ViewModelOwner, InteractorOwner<I> {
 
     protected lateinit var binding: B
     protected lateinit var viewModel: VM
+    protected lateinit var vmInteractor : I
 
     lateinit var navigationHelper: NavigationHelper
 
     val lifecycleDelegate = ActivityLifecycleDelegate()
+    val uniqueIdDelegate = UniqueIdDelegate()
+    val viewModelHolder = ViewModelHolder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
+        uniqueIdDelegate.generate(this, savedInstanceState)
         lifecycleDelegate.onActivityCreated(this, savedInstanceState)
         initNavigationHelper()
         initViewModel()
         setAndBindContentView()
+        vmInteractor = createInteractor()
     }
 
     protected fun initNavigationHelper() {
@@ -41,7 +46,8 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel> : FragmentA
     }
 
     protected fun initViewModel() {
-        viewModel = ViewModelProviders.of(this).get(getViewModelClass())
+        viewModel = viewModelHolder.getViewModel(getId(), getViewModelClass())
+//        viewModel = ViewModelProviders.of(this).get(getViewModelClass())
         viewModel.navigationState.onPropertyChangedAutoClear(this) { navigationHelper.navigate(it) }
     }
 
@@ -59,6 +65,8 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel> : FragmentA
         Log.d("##unregister", lifecycleCallback.toString())
         lifecycleDelegate.unRegisterLifecycleListener(lifecycleCallback)
     }
+
+    protected fun getId() = uniqueIdDelegate.uniqueId
 
     override fun onStart() {
         super.onStart()
@@ -83,6 +91,7 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel> : FragmentA
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         lifecycleDelegate.onActivitySaveInstanceState(this, outState)
+        uniqueIdDelegate.saveState(outState)
     }
 
     override fun onDestroy() {
@@ -90,9 +99,19 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel> : FragmentA
         lifecycleDelegate.onActivityDestroyed(this)
     }
 
+    override fun <T : BaseViewModel> getViewModel(id: Int, viewModelClass: Class<T>): T {
+        return viewModelHolder.getViewModel(id, viewModelClass)
+    }
+
+    override fun getInteractor(): I {
+        return vmInteractor
+    }
+
     protected abstract fun getViewModelClass(): Class<out VM>
 
     @LayoutRes
     protected abstract fun getLayoutResId(): Int
+
+    protected abstract fun createInteractor() : I
 
 }

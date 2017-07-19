@@ -27,7 +27,7 @@ inline fun <T> ObservableField<T>.onPropertyChanged(crossinline listener: (newVa
 }
 
 inline fun <T> ObservableField<T>.onPropertyChangedAutoClear(
-        activity: BaseActivity<*, *>, crossinline listener: (newValue: T) -> Unit) {
+        activity: BaseActivity<*, *, *>, crossinline listener: (newValue: T) -> Unit) {
 
     val propertyCallback = object : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
@@ -39,7 +39,7 @@ inline fun <T> ObservableField<T>.onPropertyChangedAutoClear(
     val lifecycleCallback = object : SimpleActivityLifecycleCallback() {
         override fun onActivityDestroyed(activity: Activity?) {
             removeOnPropertyChangedCallback(propertyCallback)
-            (activity as BaseActivity<*, *>).unRegisterLifecycleCallback(this)
+            (activity as BaseActivity<*, *, *>).unRegisterLifecycleCallback(this)
         }
     }
 

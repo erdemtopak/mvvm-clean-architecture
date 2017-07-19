@@ -1,6 +1,7 @@
 package com.topake.mvvm.di
 
 import com.topake.mvvm.ui.detail.DetailActivity
+import com.topake.mvvm.ui.detail.DetailActivityModule
 import com.topake.mvvm.ui.main.v1.MainActivityModuleV1
 import com.topake.mvvm.ui.main.v1.MainActivityModuleV2
 import com.topake.mvvm.ui.main.v1.MainActivityV1
@@ -22,4 +23,6 @@ abstract class ActivityBuilder {
     @ContributesAndroidInjector(modules = arrayOf(MainActivityModuleV2::class))
     abstract fun bindMainActivityV2(): MainActivityV2
 
+    @ContributesAndroidInjector(modules = arrayOf(DetailActivityModule::class))
+    abstract fun bindDetailActivity(): DetailActivity
 }
