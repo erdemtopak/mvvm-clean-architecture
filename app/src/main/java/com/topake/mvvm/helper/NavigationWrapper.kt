@@ -11,7 +11,7 @@ class NavigationWrapper {
     var navigationClass : Class<out FragmentActivity>? = null
     var fragment : Fragment? = null
 
-    constructor(bundle: Bundle, navigationClass: Class<out FragmentActivity>) {
+    constructor(bundle: Bundle?, navigationClass: Class<out FragmentActivity>) {
         this.bundle = bundle
         this.navigationClass = navigationClass
     }

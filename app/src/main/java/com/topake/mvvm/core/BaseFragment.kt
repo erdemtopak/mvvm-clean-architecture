@@ -65,6 +65,6 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel> : Fragment(
     @LayoutRes
     protected abstract fun getLayoutResId(): Int
 
-    protected abstract fun registerViewModel()
+    open fun registerViewModel() {}
 
 }

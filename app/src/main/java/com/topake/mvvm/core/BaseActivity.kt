@@ -5,9 +5,11 @@ import android.databinding.DataBindingUtil
 import android.databinding.ViewDataBinding
 import android.os.Bundle
 import android.support.annotation.LayoutRes
+import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.util.Log
 import com.topake.mvvm.BR
+import com.topake.mvvm.R
 import com.topake.mvvm.helper.NavigationHelper
 import com.topake.mvvm.util.onPropertyChangedAutoClear
 import dagger.android.AndroidInjection
@@ -17,18 +19,18 @@ import dagger.android.AndroidInjection
  * Created by topake on 29/06/2017.
  */
 
-abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel, I: BaseInteractor> : FragmentActivity(),
-        ViewModelOwner, InteractorOwner<I> {
+abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel> : FragmentActivity(),
+        ViewModelOwner {
 
     protected lateinit var binding: B
     protected lateinit var viewModel: VM
-    protected lateinit var vmInteractor : I
+    lateinit var vmInteractor: BaseInteractor
 
     lateinit var navigationHelper: NavigationHelper
 
     val lifecycleDelegate = ActivityLifecycleDelegate()
     val uniqueIdDelegate = UniqueIdDelegate()
-    val viewModelHolder = ViewModelHolder()
+    val viewModelHolder = createViewModelHolder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -38,7 +40,6 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel, I: BaseInte
         initNavigationHelper()
         initViewModel()
         setAndBindContentView()
-        vmInteractor = createInteractor()
     }
 
     protected fun initNavigationHelper() {
@@ -103,15 +104,18 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel, I: BaseInte
         return viewModelHolder.getViewModel(id, viewModelClass)
     }
 
-    override fun getInteractor(): I {
-        return vmInteractor
+    protected fun replaceFragment(fragment: Fragment) {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.base_frame_container, fragment)
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
+
+    protected open fun createViewModelHolder(): ViewModelHolder = ViewModelHolder()
 
     protected abstract fun getViewModelClass(): Class<out VM>
 
     @LayoutRes
     protected abstract fun getLayoutResId(): Int
-
-    protected abstract fun createInteractor() : I
 
 }

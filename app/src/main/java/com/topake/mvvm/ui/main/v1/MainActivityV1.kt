@@ -6,10 +6,9 @@ import com.topake.mvvm.R
 import com.topake.mvvm.core.BaseActivity
 import com.topake.mvvm.databinding.ActivityMainV1Binding
 import com.topake.mvvm.helper.DummyHelper
-import com.topake.mvvm.ui.main.DummyInteractor
 import javax.inject.Inject
 
-class MainActivityV1 : BaseActivity<ActivityMainV1Binding, MainViewModelV1, DummyInteractor>() {
+class MainActivityV1 : BaseActivity<ActivityMainV1Binding, MainViewModelV1>() {
 
     @Inject lateinit var dummyHelper: DummyHelper
 
@@ -25,6 +24,4 @@ class MainActivityV1 : BaseActivity<ActivityMainV1Binding, MainViewModelV1, Dumm
     override fun getLayoutResId(): Int {
         return R.layout.activity_main_v1
     }
-
-    override fun createInteractor(): DummyInteractor  = DummyInteractor()
 }
